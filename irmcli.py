@@ -89,6 +89,14 @@ def saveIR(path):
   f.close()
   print "Done !"
 
+
+def measureTemperature():
+  print "Reading temperature from irMagicianT"
+  ir_serial.write("T\r\n")
+  tenthCelsiusTemp = ir_serial.readline()
+  celsiusTemp = float(tenthCelsiusTemp) / 10
+  print "Temperature(C): %s" % celsiusTemp
+
 if __name__ == "__main__":
   # parse options
   parser = argparse.ArgumentParser(description='irMagician CLI utility.')
@@ -96,6 +104,7 @@ if __name__ == "__main__":
   parser.add_argument('-p', '--play', action="store_true", dest="play", help="play IR data", default=False)
   parser.add_argument('-s', '--save', action="store_true", dest="save", help="save IR data", default=False)
   parser.add_argument('-f', '--file', action="store", dest="file", help="IR data file (json)", default=False)
+  parser.add_argument('-t', '--temperature', action="store_true", dest="temperature", help="measuring temperature", default=False)
   
   args = parser.parse_args()
 
@@ -107,6 +116,9 @@ if __name__ == "__main__":
   
   if args.cap:
     captureIR(args.file)
+
+  if args.temperature:
+      measureTemperature()
 
   # release resources 
   ir_serial.close()
