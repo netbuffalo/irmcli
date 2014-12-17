@@ -141,9 +141,6 @@ if __name__ == "__main__":
   if args.cap:
     captureIR(args.file)
 
-  if args.temperature:
-      measureTemperature()
-
   # release resources 
   ir_serial.close()
 
