@@ -89,6 +89,31 @@ def saveIR(path):
   f.close()
   print "Done !"
 
+
+def measureTemperature():
+  #print "Sending T command..."
+  ir_serial.write("T\r\n")
+  
+  #print "Reading raw temperature..."
+  raw = ir_serial.readline()
+  
+  #print "Reading command status..."
+  status = ir_serial.readline().rstrip()
+  
+  celsiusTemp = None
+  try:
+    celsiusTemp = ((5.0 / 1024.0 * float(raw)) - 0.4) / 0.01953 
+    print "Temperature: %s" % "{:4.1f}".format(celsiusTemp)
+  except (ValueError, TypeError):
+    print "TemperatureExcetion: raw => %s, status => %s" % (raw, status)
+
+
+def printFirmwareVer():
+  ir_serial.write("V\r\n")
+  print ir_serial.readline().rstrip()
+  ir_serial.readline()
+
+
 if __name__ == "__main__":
   # parse options
   parser = argparse.ArgumentParser(description='irMagician CLI utility.')
@@ -96,8 +121,16 @@ if __name__ == "__main__":
   parser.add_argument('-p', '--play', action="store_true", dest="play", help="play IR data", default=False)
   parser.add_argument('-s', '--save', action="store_true", dest="save", help="save IR data", default=False)
   parser.add_argument('-f', '--file', action="store", dest="file", help="IR data file (json)", default=False)
+  parser.add_argument('-t', '--temperature', action="store_true", dest="temperature", help="measure ambient irMagicianT temperature in degrees Celsius", default=False)
+  parser.add_argument('-v', '--version', action="store_true", dest="version", help="show firmware version", default=False)
   
   args = parser.parse_args()
+
+  if args.version:
+    printFirmwareVer()
+
+  if args.temperature:
+    measureTemperature()
 
   if args.play:
     playIR(args.file)
